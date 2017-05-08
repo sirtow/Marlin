@@ -62,7 +62,6 @@
 
   #define SIZE_OF_LITTLE_RAISE 1
   #define BIG_RAISE_NOT_NEEDED 0
-  extern void lcd_quick_feedback();
   extern void lcd_status_screen();
   typedef void (*screenFunc_t)();
   extern void lcd_goto_screen(screenFunc_t screen, const uint32_t encoder = 0);
@@ -449,7 +448,7 @@
             y_pos = current_position[Y_AXIS];
           }
 
-          const float height = code_seen('H') && code_has_value() ? code_value_float() : Z_CLEARANCE_BETWEEN_PROBES;
+          float height = code_seen('H') && code_has_value() ? code_value_float() : Z_CLEARANCE_BETWEEN_PROBES;
 
           if (code_seen('B')) {
             card_thickness = code_has_value() ? code_value_float() : measure_business_card_thickness(height);
@@ -905,7 +904,7 @@
     say_and_take_a_measurement();
 
     const float z2 = use_encoder_wheel_to_measure_point();
-    do_blocking_move_to_z(current_position[Z_AXIS] + SIZE_OF_LITTLE_RAISE);
+    do_blocking_move_to_z(current_position[Z_AXIS] + Z_CLEARANCE_BETWEEN_PROBES);
 
     if (g29_verbose_level > 1) {
       SERIAL_PROTOCOLPGM("Business Card is: ");
@@ -919,7 +918,7 @@
     return abs(z1 - z2);
   }
 
-  void manually_probe_remaining_mesh(const float &lx, const float &ly, const float &z_clearance, const float &card_thickness, const bool do_ubl_mesh_map) {
+  void manually_probe_remaining_mesh(const float &lx, const float &ly, float &z_clearance, const float &card_thickness, const bool do_ubl_mesh_map) {
 
     ubl.has_control_of_lcd_panel = true;
     ubl.save_ubl_active_state_and_disable();   // we don't do bed level correction because we want the raw data when we probe
@@ -1625,7 +1624,7 @@
       SERIAL_ECHOPGM("Could not complete LSF!");
       return;
     }
-
+    
     if (g29_verbose_level > 3) {
       SERIAL_ECHOPGM("LSF Results A=");
       SERIAL_PROTOCOL_F(lsf_results.A, 7);
