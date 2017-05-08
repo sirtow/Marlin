@@ -881,7 +881,7 @@
     SERIAL_PROTOCOLLNPGM(" and take a measurement.");
   }
 
-  float measure_business_card_thickness(const float &in_height) {
+  float measure_business_card_thickness(float &in_height) {
     ubl.has_control_of_lcd_panel = true;
     ubl.save_ubl_active_state_and_disable();   // Disable bed level correction for probing
 
